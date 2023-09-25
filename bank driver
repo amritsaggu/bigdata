@@ -1,0 +1,41 @@
+
+import java.io.IOException;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class d1{
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException
+    {
+    	Path accountPath = new Path("");
+		Path personPath = new Path("");
+		Path outputDir = new Path("");
+
+	Configuration conf = new Configuration();
+	Job job = new Job(conf, "example2");
+	job.setJarByClass(d1.class);
+	job.setMapperClass(m1.class);
+	job.setMapperClass(m2.class);
+	job.setReducerClass(r2.class);
+
+	job.setMapOutputKeyClass(Text.class);
+	job.setMapOutputValueClass(Text.class);
+	job.setOutputKeyClass(Text.class);
+	job.setOutputValueClass(Text.class);
+
+	MultipleInputs.addInputPath(job, accountPath,  TextInputFormat.class,  AccountMapper.class);
+
+	MultipleInputs.addInputPath(job,  personPath, TextInputFormat.class, PersonMapper.class);
+
+	FileOutputFormat.setOutputPath(job, outputDir);
+	outputDir.getFileSystem(job.getConfiguration()).delete(outputDir,true);
+
+	System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+}

@@ -1,0 +1,57 @@
+
+
+import java.util.Iterator;
+import java.io.IOException;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+
+public class r1 extends Reducer<Text, Text, Text, Text>
+{
+  
+    protected void reduce(Text key, Iterable<Text> values, Context c)throws IOException,java.lang.InterruptedException
+    {
+    	
+	String fName = "";   
+	String lName = "";
+	String accountNumber = "";
+	int totalDeposit = 0;
+	
+	Iterator<Text> valuesIter = values.iterator();
+	while (valuesIter.hasNext())
+	{
+		
+	    String val = valuesIter.next().toString();   
+	    String [] words = val.split(",");          
+	    if (words[0].equals("P")) 
+	    {
+		
+		fName = words[1];         
+		lName = words[2];          
+	    }
+	    else if (words[0].equals("A"))
+	    {
+		
+		accountNumber = words[1];                                    
+		if (words[4].equalsIgnoreCase("yes"))
+		{
+		    
+		    break;
+		}
+		int withdrawAmount = Integer.parseInt(words[3]);
+		int depositAmount = Integer.parseInt(words[2]);
+		if (withdrawAmount >= (depositAmount/2))
+		{
+		   
+		}
+		totalDeposit += depositAmount;                   
+	    }
+	}
+	
+	if (totalDeposit >= 10000)
+	{
+
+	    c.write(key, new Text(fName + "," + lName + "," + accountNumber));
+	}
+    }
+}
